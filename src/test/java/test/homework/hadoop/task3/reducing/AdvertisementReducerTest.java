@@ -1,6 +1,6 @@
-package test.homework.hadoop.task3;
+package test.homework.hadoop.task3.reducing;
 
-import homework.hadoop.task3.AdvertisementReducer;
+import homework.hadoop.task3.reducing.AdvertisementReducer;
 import homework.hadoop.task3.TempAdvertisementDataWritable;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

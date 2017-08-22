@@ -1,6 +1,7 @@
 package homework.hadoop.task3;
 
 import homework.hadoop.task3.mapping.AdvertisementMapper;
+import homework.hadoop.task3.reducing.AdvertisementReducer;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
@@ -23,8 +24,8 @@ import java.io.IOException;
 /**
  * How to use
  * Run in local mode: java -jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output
- * Run on a cluster: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output
- * Run on a cluster with 280 Bidding Price threshold: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output 280
+ * Run on a cluster: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output city.en.txt
+ * Run on a cluster with 280 Bidding Price threshold: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output city.en.txt 280
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdvertisementDriver extends Configured implements Tool {
@@ -50,14 +51,25 @@ public class AdvertisementDriver extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setMapOutputValueClass(TempAdvertisementDataWritable.class);
         job.setOutputValueClass(IntWritable.class);
+        setupCache(args, job);
         setupFileSystem(conf, job, args);
         return job.waitForCompletion(true) ? 0 : 1;
     }
 
-    private void setupMapperParameters(String[] args, Configuration conf) {
+    private void setupCache(String[] args, Job job) throws IOException {
         if (args.length >= 3) {
+            Path path = new Path(args[2]);
+            boolean exists = FileSystem.getLocal(job.getConfiguration()).exists(path);
+            if (exists) {
+                job.addCacheFile(path.toUri());
+            }
+        }
+    }
+
+    private void setupMapperParameters(String[] args, Configuration conf) {
+        if (args.length >= 4) {
             try {
-                int threshold = Integer.parseInt(args[2]);
+                int threshold = Integer.parseInt(args[3]);
                 conf.setInt("homework.hadoop.task3.bidding-price-threshold", threshold);
             } catch (NumberFormatException ex) {
                 log.error("Incorrect value for the Bidding Price Threshold");
@@ -69,12 +81,6 @@ public class AdvertisementDriver extends Configured implements Tool {
         FileInputFormat.addInputPath(job, new Path(args[0]));
         val outputDir = new Path(args[1]);
         FileOutputFormat.setOutputPath(job, outputDir);
-        clearLocalSystem(conf, outputDir);
-    }
-
-    private void clearLocalSystem(Configuration conf, Path outputDir) throws IOException {
-        FileSystem fs = FileSystem.getLocal(conf);
-        fs.delete(outputDir, true);
     }
 
     static Logger log = LoggerFactory.getLogger(AdvertisementDriver.class);

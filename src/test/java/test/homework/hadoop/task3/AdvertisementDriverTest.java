@@ -1,7 +1,7 @@
 package test.homework.hadoop.task3;
 
 import homework.hadoop.task3.AdvertisementCombiner;
-import homework.hadoop.task3.AdvertisementReducer;
+import homework.hadoop.task3.reducing.AdvertisementReducer;
 import homework.hadoop.task3.TempAdvertisementDataWritable;
 import homework.hadoop.task3.mapping.AdvertisementMapper;
 import lombok.AccessLevel;

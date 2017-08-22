@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    compile ('org.apache.hadoop:hadoop-client:2.2.0') {
+    compile ('org.apache.hadoop:hadoop-client:2.8.1') {
         exclude group: 'org.slf4j'
     }
 
@@ -31,6 +31,7 @@ dependencies {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
     testCompile 'org.apache.mrunit:mrunit:1.1.0:hadoop2'
     testCompile 'org.projectlombok:lombok:1.16.18'
+    testCompile "com.google.guava:guava:23.0"
 }
 
 jar {

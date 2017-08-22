@@ -1,5 +1,6 @@
-package homework.hadoop.task3;
+package homework.hadoop.task3.reducing;
 
+import homework.hadoop.task3.TempAdvertisementDataWritable;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.val;
@@ -23,6 +24,11 @@ public class AdvertisementReducer extends Reducer<Text, TempAdvertisementDataWri
         totalAmount.set(total);
         context.write(key, totalAmount);
     }
+
+//    @Override
+//    protected void setup(Context context) throws IOException, InterruptedException {
+//        context.getCacheFiles()[0].get
+//    }
 
     IntWritable totalAmount = new IntWritable();
 
