@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName='homework.hadoop.RequestsDriver'
+mainClassName='homework.hadoop.task3.AdvertisementDriver'
 
 sourceCompatibility = 1.8
 
@@ -23,6 +23,7 @@ dependencies {
 
     compile "org.slf4j:slf4j-api:1.7.25"
     compile "org.slf4j:slf4j-simple:1.7.25"
+    compile "eu.bitwalker:UserAgentUtils:1.20"
 
     compileOnly 'org.projectlombok:lombok:1.16.18'
 
@@ -35,7 +36,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'homework.hadoop.RequestsDriver'
+                'Main-Class': 'homework.hadoop.task3.AdvertisementDriver'
         )
     }
 }
