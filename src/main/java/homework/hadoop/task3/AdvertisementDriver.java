@@ -45,6 +45,7 @@ public class AdvertisementDriver extends Configured implements Tool {
         job.setMapperClass(AdvertisementMapper.class);
         job.setCombinerClass(AdvertisementCombiner.class);
         job.setReducerClass(AdvertisementReducer.class);
+        job.setNumReduceTasks(2);
         job.setOutputKeyClass(Text.class);
         job.setMapOutputValueClass(TempAdvertisementDataWritable.class);
         job.setOutputValueClass(IntWritable.class);
