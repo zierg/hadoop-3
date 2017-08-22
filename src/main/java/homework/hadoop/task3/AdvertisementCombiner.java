@@ -17,22 +17,22 @@ public class AdvertisementCombiner extends Reducer<Text, TempAdvertisementDataWr
 
     @Override
     protected void reduce(Text key, Iterable<TempAdvertisementDataWritable> values, Context context) throws IOException, InterruptedException {
-        Map<String, Integer> combined = new HashMap<>();
+        Map<Integer, Integer> combined = new HashMap<>();
 
         for (val value : values) {
             reducePerOs(combined, value);
         }
 
-        for (Map.Entry<String, Integer> entry : combined.entrySet()) {
-            output.setOsType(entry.getKey());
+        for (Map.Entry<Integer, Integer> entry : combined.entrySet()) {
+            output.setOsTypeGroupNumber(entry.getKey());
             output.setAmount(entry.getValue());
             context.write(key, output);
         }
     }
 
-    private void reducePerOs(Map<String, Integer> combined, TempAdvertisementDataWritable value) {
-        combined.computeIfPresent(value.getOsType().toString(), (os, amount) -> amount += value.getAmount().get());
-        combined.computeIfAbsent(value.getOsType().toString(), (os) -> value.getAmount().get());
+    private void reducePerOs(Map<Integer, Integer> combined, TempAdvertisementDataWritable value) {
+        combined.computeIfPresent(value.getOsTypeGroupNumber().get(), (os, amount) -> amount += value.getAmount().get());
+        combined.computeIfAbsent(value.getOsTypeGroupNumber().get(), (os) -> value.getAmount().get());
     }
 
     TempAdvertisementDataWritable output = new TempAdvertisementDataWritable();

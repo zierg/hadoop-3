@@ -1,5 +1,6 @@
 package homework.hadoop.task3.mapping;
 
+import homework.hadoop.task3.OsTypeDivider;
 import homework.hadoop.task3.TempAdvertisementDataWritable;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -31,9 +32,14 @@ public class AdvertisementMapper extends Mapper<Object, Text, Text, TempAdvertis
 
     private void write(ParamsExtractor.Params params, Context context) throws IOException, InterruptedException {
         advertisementData.setAmount(1);
-        advertisementData.setOsType(UserAgentUtils.getOsType(params.getUserAgent()));
+        advertisementData.setOsTypeGroupNumber(getOsTypeGroupNumber(params));
         cityId.set(params.getCityId());
         context.write(cityId, advertisementData);
+    }
+
+    private int getOsTypeGroupNumber(ParamsExtractor.Params params) {
+        String osType = UserAgentUtils.getOsType(params.getUserAgent());
+        return OsTypeDivider.getNumberForOs(osType);
     }
 
     Text cityId = new Text();

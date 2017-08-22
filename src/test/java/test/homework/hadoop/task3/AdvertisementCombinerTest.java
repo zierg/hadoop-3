@@ -30,26 +30,26 @@ public class AdvertisementCombinerTest {
     static int INPUT_2_AMOUNT = 1;
     static int INPUT_3_AMOUNT = 4;
 
-    static String WINDOWS = "Windows";
-    static String ANDROID = "Android";
+    static int WINDOWS = 0;
+    static int NOT_WINDOWS = 1;
 
     static TempAdvertisementDataWritable INPUT_1 = new TempAdvertisementDataWritable()
-            .setOsType(WINDOWS)
+            .setOsTypeGroupNumber(WINDOWS)
             .setAmount(INPUT_1_AMOUNT);
 
     static TempAdvertisementDataWritable INPUT_2 = new TempAdvertisementDataWritable()
-            .setOsType(WINDOWS)
+            .setOsTypeGroupNumber(WINDOWS)
             .setAmount(INPUT_2_AMOUNT);
 
     static TempAdvertisementDataWritable INPUT_3 = new TempAdvertisementDataWritable()
-            .setOsType(ANDROID)
+            .setOsTypeGroupNumber(NOT_WINDOWS)
             .setAmount(INPUT_3_AMOUNT);
 
     static TempAdvertisementDataWritable EXPECTED_OUTPUT_1 = new TempAdvertisementDataWritable()
-            .setOsType(WINDOWS)
+            .setOsTypeGroupNumber(WINDOWS)
             .setAmount(INPUT_1_AMOUNT + INPUT_1_AMOUNT);
 
     static TempAdvertisementDataWritable EXPECTED_OUTPUT_2 = new TempAdvertisementDataWritable()
-            .setOsType(ANDROID)
+            .setOsTypeGroupNumber(NOT_WINDOWS)
             .setAmount(INPUT_3_AMOUNT);
 }

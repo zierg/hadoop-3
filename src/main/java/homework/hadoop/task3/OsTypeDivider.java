@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class OsTypeDivider {
 
-    public int getNumberForOs(String os) {
+    public static int getNumberForOs(String os) {
         return "Windows".equalsIgnoreCase(os) ? 0 : 1;
     }
 
