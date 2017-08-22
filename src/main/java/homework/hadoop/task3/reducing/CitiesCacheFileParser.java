@@ -3,28 +3,30 @@ package homework.hadoop.task3.reducing;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.JobContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CitiesCacheFileParser {
 
-    public CitiesCacheFileParser(URI uri) {
-        file = Paths.get(uri);
+    public CitiesCacheFileParser(URI uri, JobContext context) {
+        file = new org.apache.hadoop.fs.Path(uri.getPath());
+        this.context = context;
     }
 
     public Map<String, String> getCities() {
         cities = new HashMap<>();
-        try (BufferedReader reader = Files.newBufferedReader(file)) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(FileSystem.get(context.getConfiguration()).open(new Path(file.toString()))))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 parseLine(line);
@@ -45,10 +47,11 @@ public class CitiesCacheFileParser {
         }
     }
 
+    Path file;
+    JobContext context;
+
     @NonFinal
     Map<String, String> cities;
-
-    Path file;
 
     static String LINE_REGEX = "[^\\s]+\\s[^\\s]+";
 

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.val;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -19,6 +20,7 @@ import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -29,7 +31,6 @@ import java.io.IOException;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdvertisementDriver extends Configured implements Tool {
-
 
     public static void main(String[] args) throws Exception {
         AdvertisementDriver driver = new AdvertisementDriver();
@@ -53,16 +54,28 @@ public class AdvertisementDriver extends Configured implements Tool {
         job.setOutputValueClass(IntWritable.class);
         setupCache(args, job);
         setupFileSystem(conf, job, args);
+        return executeJob(job);
+    }
+
+    private int executeJob(Job job) throws IOException, InterruptedException, ClassNotFoundException {
+
         return job.waitForCompletion(true) ? 0 : 1;
     }
 
     private void setupCache(String[] args, Job job) throws IOException {
         if (args.length >= 3) {
             Path path = new Path(args[2]);
-            boolean exists = FileSystem.getLocal(job.getConfiguration()).exists(path);
-            if (exists) {
-                job.addCacheFile(path.toUri());
+            FileSystem fileSystem = FileSystem.get(job.getConfiguration());
+
+            FileStatus status;
+            try {
+                status = fileSystem.getFileStatus(path);
+            } catch (FileNotFoundException ex) {
+                log.warn("File {} is not present in HDFS", path);
+                return;
             }
+            Path absolutePath = status.getPath();
+            job.addCacheFile(absolutePath.toUri());
         }
     }
 
