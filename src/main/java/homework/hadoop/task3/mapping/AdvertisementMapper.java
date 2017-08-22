@@ -40,7 +40,9 @@ public class AdvertisementMapper extends Mapper<Object, Text, Text, TempAdvertis
 
     private void write(ParamsExtractor.Params params, Context context) throws IOException, InterruptedException {
         advertisementData.setAmount(1);
-        advertisementData.setOsTypeGroupNumber(getOsTypeGroupNumber(params));
+        int osTypeGroupNumber = getOsTypeGroupNumber(params);
+        context.getCounter("OS Statistics", Objects.toString(osTypeGroupNumber)).increment(1);
+        advertisementData.setOsTypeGroupNumber(osTypeGroupNumber);
         cityId.set(params.getCityId());
         context.write(cityId, advertisementData);
     }
