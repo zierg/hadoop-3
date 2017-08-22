@@ -24,6 +24,7 @@ import java.io.IOException;
  * How to use
  * Run in local mode: java -jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output
  * Run on a cluster: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output
+ * Run on a cluster with 280 Bidding Price threshold: hadoop jar homework-3-advertisement-1.0-SNAPSHOT-all.jar input output 280
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdvertisementDriver extends Configured implements Tool {
@@ -38,6 +39,7 @@ public class AdvertisementDriver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = getConf();
+        setupMapperParameters(args, conf);
         Job job = Job.getInstance(conf, "Advertisement Data");
         job.setJarByClass(AdvertisementDriver.class);
         job.setMapperClass(AdvertisementMapper.class);
@@ -47,12 +49,18 @@ public class AdvertisementDriver extends Configured implements Tool {
         job.setMapOutputValueClass(TempAdvertisementDataWritable.class);
         job.setOutputValueClass(IntWritable.class);
         setupFileSystem(conf, job, args);
-        int result = job.waitForCompletion(true) ? 0 : 1;
-        log.info("Browsers usage statistics:");
-        job.getCounters()
-                .getGroup("Browser Usage")
-                .forEach(counter -> log.info("{}: {}", counter.getDisplayName(), counter.getValue()));
-        return result;
+        return job.waitForCompletion(true) ? 0 : 1;
+    }
+
+    private void setupMapperParameters(String[] args, Configuration conf) {
+        if (args.length >= 3) {
+            try {
+                int threshold = Integer.parseInt(args[2]);
+                conf.setInt("homework.hadoop.task3.bidding-price-threshold", threshold);
+            } catch (NumberFormatException ex) {
+                log.error("Incorrect value for the Bidding Price Threshold");
+            }
+        }
     }
 
     private void setupFileSystem(Configuration conf, Job job, String[] args) throws IOException {
